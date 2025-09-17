@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anal Messenger</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 18px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 0;
+            overflow: hidden;
+            margin: 0;
+            height: 100%;
+        }
+        
+        .login-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 24px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            margin: 40px auto;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-section h2 {
+            margin-bottom: 24px;
+            font-size: 22px;
+            color: #4a5568;
+        }
+        
+        .chat-section {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 0;
+        }
+        
+        input {
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 16px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f7fafc;
+        }
+        
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-break: break-word;
+            animation: fadeIn 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .my-message {
+            background: #667eea;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .other-message {
+            background: white;
+            color: #2d3748;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .my-message .message-sender {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .other-message .message-sender {
+            color: #667eea;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 8px;
+        }
+        
+        .message-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .message-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .message-input-container {
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+            align-items: center;
+        }
+        
+        .message-input-container input {
+            flex: 1;
+            margin-bottom: 0;
+            padding: 14px 16px;
+        }
+        
+        .message-input-container button {
+            padding: 14px 20px;
+            white-space: nowrap;
+        }
+        
+        .upload-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            transition: all 0.2s;
+        }
+        
+        .upload-btn:hover {
+            background: #cbd5e0;
+            transform: scale(1.05);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: #edf2f7;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background: #48bb78;
+            border-radius: 50%;
+        }
+        
+        .system-message {
+            align-self: center;
+            background: #edf2f7;
+            color: #718096;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .upload-progress {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #667eea;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .compress-warning {
+            font-size: 12px;
+            color: #718096;
+            text-align: center;
+            padding: 8px;
+            background: #fff5f5;
+            border-radius: 6px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .likes-container {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            gap: 6px;
+        }
+        
+        .like-btn {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .like-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .like-count {
+            font-size: 12px;
+            color: inherit;
+            opacity: 0.8;
+            min-width: 16px;
+            text-align: center;
+        }
+        
+        .my-message .likes-container {
+            justify-content: flex-end;
+        }
+        
+        .other-message .likes-container {
+            justify-content: flex-start;
+        }
+        
+        .like-animation {
+            animation: likePulse 0.6s ease;
+        }
+        
+        @keyframes likePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .message {
+                max-width: 85%;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .message-input-container {
+                padding: 12px;
+                flex-wrap: wrap;
+            }
+            
+            .message-input-container button {
+                padding: 12px 16px;
+                flex: 1;
+            }
+            
+            .upload-btn {
+                order: -1;
+                width: 40px;
+                height: 40px;
+                margin-bottom: 0;
+            }
+            
+            .message-image {
+                max-height: 200px;
+            }
+        }
+
+        .notification-permission {
+            background: #ffeaa7;
+            color: #d35400;
+            padding: 12px 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .notification-permission button {
+            background: #e17055;
+            margin-left: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Anal Messenger</h1>
+        </div>
+        
+        <div class="notification-permission" id="notificationPermission">
+            Разрешите уведомления, чтобы получать сообщения, когда приложение неактивно
+            <button id="enableNotifications">Разрешить</button>
+        </div>
+        
+        <div class="chat-container">
+            <div class="login-section" id="loginSection">
+                <h2>Введите ваше имя</h2>
+                <input type="text" id="usernameInput" placeholder="Ваше имя">
+                <button id="loginButton">Войти в чат</button>
+            </div>
+            
+            <div class="chat-section" id="chatSection">
+                <div class="user-info">
+                    <div class="online-indicator"></div>
+                    <div>Вы: <span id="currentUsername"></span></div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="system-message">
+                        Добро пожаловать в общий чат! Отправляйте текстовые сообщения и изображения.
+                    </div>
+                </div>
+                
+                <div class="message-input-container">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <button class="upload-btn" id="uploadButton" title="Прикрепить фото">
+                        📎
+                    </button>
+                    <input type="text" id="messageInput" placeholder="Введите ваше сообщение...">
+                    <button id="sendButton">Отправить</button>
+                </div>
+                <div class="compress-warning" id="compressWarning">
+                    Изображение сжато для быстрой отправки (макс. 1MB)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-modal" id="imageModal">
+        <div class="close-modal" id="closeModal">×</div>
+        <div class="modal-content">
+            <img id="modalImage" src="">
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+
+    <script>
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAE0RJ5LEQ0AQT6G05UHc15FSTilVqu0vc",
+            authDomain: "anal-messenger.firebaseapp.com",
+            projectId: "anal-messenger",
+            storageBucket: "anal-messenger.firebasestorage.app",
+            messagingSenderId: "302872384307",
+            appId: "1:302872384307:web:48ef1f9af350a0d476e446"
+        };
+
+        // Инициализация Firebase
+        let db;
+        let messaging;
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            messaging = firebase.messaging();
+            
+            // Устанавливаем VAPID key из вашего облачного messaging
+            messaging.usePublicVapidKey("BMeOcMYlQNfp9dG7jGUNwjCiFvQbQQkRRBMRAqcojjGRa6_l0ikIXI-2HQeQiUf_cyMJd8f7IDZydyPufS7z468");
+            
+        } catch (error) {
+            console.error('Ошибка инициализации Firebase:', error);
+        }
+
+        // Элементы DOM
+        const loginSection = document.getElementById('loginSection');
+        const chatSection = document.getElementById('chatSection');
+        const usernameInput = document.getElementById('usernameInput');
+        const loginButton = document.getElementById('loginButton');
+        const currentUsername = document.getElementById('currentUsername');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const imageInput = document.getElementById('imageInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const compressWarning = document.getElementById('compressWarning');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        const notificationPermission = document.getElementById('notificationPermission');
+        const enableNotifications = document.getElementById('enableNotifications');
+        
+        let username = '';
+        let lastTap = 0;
+        let messageLikes = {};
+        let fcmToken = '';
+
+        // Запрос разрешения на уведомления
+        function requestNotificationPermission() {
+            if (!messaging) return;
+            
+            Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    console.log('Разрешение на уведомления получено');
+                    notificationPermission.style.display = 'none';
+                    getFCMToken();
+                } else {
+                    console.log('Разрешение на уведомления не получено');
+                    notificationPermission.style.display = 'block';
+                }
+            }).catch((error) => {
+                console.error('Ошибка запроса разрешения:', error);
+            });
+        }
+
+        // Получение FCM токена
+        function getFCMToken() {
+            if (!messaging) return;
+            
+            messaging.getToken().then((currentToken) => {
+                if (currentToken) {
+                    fcmToken = currentToken;
+                    console.log('FCM токен получен:', currentToken);
+                    
+                    // Сохраняем токен в Firestore
+                    if (username) {
+                        saveUserToken(username, currentToken);
+                    }
+                } else {
+                    console.log('Не удалось получить FCM токен');
+                }
+            }).catch((err) => {
+                console.log('Ошибка получения FCM токена:', err);
+            });
+        }
+
+        // Сохранение токена пользователя в Firestore
+        function saveUserToken(username, token) {
+            if (!db) return;
+            
+            db.collection('userTokens').doc(username).set({
+                token: token,
+                username: username,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch((error) => {
+                console.error('Ошибка сохранения токена:', error);
+            });
+        }
+
+        // Отправка push-уведомления через Cloud Functions
+        function sendPushNotification(sender, messageText, messageType = 'text') {
+            if (!db) return;
+            
+            // Получаем все токены пользователей, кроме отправителя
+            db.collection('userTokens').get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.username !== sender && userData.token) {
+                        // Здесь должен быть вызов вашей Cloud Function
+                        // Для примера просто выводим в консоль
+                        console.log('Отправка уведомления пользователю:', userData.username);
+                        
+                        // В реальном приложении здесь должен быть fetch к вашей Cloud Function
+                        /*
+                        fetch('https://your-region-your-project.cloudfunctions.net/sendNotification', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                token: userData.token,
+                                title: `Новое сообщение от ${sender}`,
+                                body: messageType === 'text' ? messageText : '📷 Новое изображение',
+                                icon: '/icon-192x192.png'
+                            })
+                        });
+                        */
+                    }
+                });
+            }).catch((error) => {
+                console.error('Ошибка получения токенов:', error);
+            });
+        }
+
+        // Обработка входящих сообщений, когда приложение активно
+        if (messaging) {
+            messaging.onMessage((payload) => {
+                console.log('Сообщение получено:', payload);
+                
+                // Показываем уведомление, даже если приложение активно
+                if (payload.notification) {
+                    const { title, body } = payload.notification;
+                    
+                    // Создаем уведомление
+                    if ('serviceWorker' in navigator && Notification.permission === 'granted') {
+                        navigator.serviceWorker.getRegistration().then(registration => {
+                            if (registration) {
+                                registration.showNotification(title, {
+                                    body: body,
+                                    icon: '/icon-192x192.png'
+                                });
+                            }
+                        });
+                    } else if (Notification.permission === 'granted') {
+                        new Notification(title, { 
+                            body: body,
+                            icon: '/icon-192x192.png'
+                        });
+                    }
+                }
+            });
+        }
+
+        // Вход в чат
+        loginButton.addEventListener('click', () => {
+            username = usernameInput.value.trim();
+            if (username) {
+                currentUsername.textContent = username;
+                loginSection.style.display = 'none';
+                chatSection.style.display = 'flex';
+                
+                // Запрашиваем разрешение на уведомления после входа
+                requestNotificationPermission();
+                
+                if (db) {
+                    loadMessages();
+                } else {
+                    displayDemoMessages();
+                }
+            } else {
+                alert('Пожалуйста, введите ваше имя');
+            }
+        });
+
+        // Кнопка разрешения уведомлений
+        enableNotifications.addEventListener('click', requestNotificationPermission);
+        
+        // Открытие выбора файла
+        uploadButton.addEventListener('click', () => {
+            imageInput.click();
+        });
+        
+        // Обработка выбора файла
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                compressAndSendImage(file);
+            }
+        });
+        
+        // Сжатие и отправка изображения
+        function compressAndSendImage(file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Размер файла не должен превышать 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 600;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    if (file.size > 1024 * 1024) {
+                        compressWarning.style.display = 'block';
+                        setTimeout(() => {
+                            compressWarning.style.display = 'none';
+                        }, 3000);
+                    }
+                    
+                    sendImageMessage(compressedDataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Отправка сообщения с изображением
+        function sendImageMessage(imageData) {
+            if (db) {
+                db.collection('messages').add({
+                    type: 'image',
+                    imageData: imageData,
+                    sender: username,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    likes: 0,
+                    likedBy: []
+                }).then(() => {
+                    // Отправляем push-уведомление
+                    sendPushNotification(username, '', 'image');
+                }).catch((error) => {
+                    console.error('Ошибка отправки изображения:', error);
+                    alert('Ошибка отправки изображения');
+                });
+            } else {
+                displayImageMessage(imageData, username);
+            }
+        }
+        
+        // Отправка текстового сообщения
+        sendButton.addEventListener('click', sendTextMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendTextMessage();
+            }
+        });
+        
+        function sendTextMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText && username) {
+                if (db) {
+                    db.collection('messages').add({
+                        type: 'text',
+                        text: messageText,
+                        sender: username,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        likes: 0,
+                        likedBy: []
+                    }).then(() => {
+                        messageInput.value = '';
+                        
+                        // Отправляем push-уведомление
+                        sendPushNotification(username, messageText, 'text');
+                    }).catch((error) => {
+                        console.error('Ошибка отправки сообщения:', error);
+                    });
+                } else {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message my-message';
+                    messageDiv.innerHTML = `
+                        <div class="message-sender">${username}</div>
+                        <div>${messageText}</div>
+                        <div class="message-time">Только что</div>
+                    `;
+                    
+                    chatMessages.appendChild(messageDiv);
+                    messageInput.value = '';
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        }
+        
+        // Загрузка сообщений
+        function loadMessages() {
+            if (!db) {
+                displayDemoMessages();
+                return;
+            }
+            
+            db.collection('messages')
+                .orderBy('timestamp', 'desc')
+                .limit(500)
+                .onSnapshot((querySnapshot) => {
+                    const messages = [];
+                    querySnapshot.forEach((doc) => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+                    displayMessages(messages.reverse());
+                }, (error) => {
+                    console.error('Ошибка загрузки сообщений:', error);
+                    displayDemoMessages();
+                });
+        }
+        
+        function displayMessages(messages) {
+            chatMessages.innerHTML = '';
+            
+            if (messages.length === 0) {
+                chatMessages.innerHTML = `
+                    <div class="system-message">
+                        Пока нет сообщений. Будьте первым!
+                    </div>
+                `;
+                return;
+            }
+            
+            messages.forEach((msg) => {
+                if (msg.type === 'image') {
+                    displayImageMessage(msg.imageData, msg.sender, msg.timestamp, msg.id, msg.likes, msg.likedBy);
+                } else {
+                    displayTextMessage(msg.text, msg.sender, msg.timestamp, msg.id, msg.likes, msg.likedBy);
+                }
+            });
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function displayTextMessage(text, sender, timestamp, messageId, likes = 0, likedBy = []) {
+            const messageDiv = document.createElement('div');
+            const isMyMessage = sender === username;
+            const isLiked = likedBy.includes(username);
+            
+            messageDiv.className = isMyMessage ? 'message my-message' : 'message other-message';
+            messageDiv.dataset.messageId = messageId;
+            
+            const messageTime = timestamp ? 
+                new Date(timestamp.toDate()).toLocaleTimeString() : 'Только что';
+            
+            messageDiv.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div>${text}</div>
+                <div class="message-time">${messageTime}</div>
+                <div class="likes-container">
+                    <button class="like-btn" onclick="toggleLike('${messageId}', ${likes}, ${JSON.stringify(likedBy)})">
+                        ${isLiked ? '👍' : '👍'}
+                    </button>
+                    <span class="like-count">${likes > 0 ? likes : ''}</span>
+                </div>
+            `;
+            
+            setupDoubleTap(messageDiv, messageId, likes, likedBy);
+            
+            chatMessages.appendChild(messageDiv);
+        }
+        
+        function displayImageMessage(imageData, sender, timestamp, messageId, likes = 0, likedBy = []) {
+            const messageDiv = document.createElement('div');
+            const isMyMessage = sender === username;
+            const isLiked = likedBy.includes(username);
+            
+            messageDiv.className = isMyMessage ? 'message my-message' : 'message other-message';
+            messageDiv.dataset.messageId = messageId;
+            
+            const messageTime = timestamp ? 
+                new Date(timestamp.toDate()).toLocaleTimeString() : 'Только что';
+            
+            messageDiv.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <img src="${imageData}" class="message-image" alt="Изображение" onclick="openModal('${imageData}')">
+                <div class="message-time">${messageTime}</div>
+                <div class="likes-container">
+                    <button class="like-btn" onclick="toggleLike('${messageId}', ${likes}, ${JSON.stringify(likedBy)})">
+                        ${isLiked ? '👍' : '👍'}
+                    </button>
+                    <span class="like-count">${likes > 0 ? likes : ''}</span>
+                </div>
+            `;
+            
+            setupDoubleTap(messageDiv, messageId, likes, likedBy);
+            
+            chatMessages.appendChild(messageDiv);
+        }
+        
+        // Настройка двойного нажатия для лайков
+        function setupDoubleTap(element, messageId, likes, likedBy) {
+            element.addEventListener('click', (e) => {
+                if (e.target.closest('.like-btn') || e.target.classList.contains('message-image')) {
+                    return;
+                }
+                
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                
+                if (tapLength < 300 && tapLength > 0) {
+                    toggleLike(messageId, likes, likedBy);
+                }
+                
+                lastTap = currentTime;
+            });
+        }
+        
+        // Функция переключения лайка
+        window.toggleLike = function(messageId, currentLikes, likedBy) {
+            if (!username) return;
+            
+            const isLiked = likedBy.includes(username);
+            let newLikes = currentLikes;
+            let newLikedBy = [...likedBy];
+            
+            if (isLiked) {
+                newLikes = Math.max(0, currentLikes - 1);
+                newLikedBy = newLikedBy.filter(user => user !== username);
+            } else {
+                newLikes = currentLikes + 1;
+                newLikedBy.push(username);
+            }
+            
+            if (db) {
+                db.collection('messages').doc(messageId).update({
+                    likes: newLikes,
+                    likedBy: newLikedBy
+                }).catch((error) => {
+                    console.error('Ошибка обновления лайка:', error);
+                });
+            } else {
+                updateLikeUI(messageId, newLikes, newLikedBy);
+            }
+        };
+        
+        // Обновление UI лайков
+        function updateLikeUI(messageId, likes, likedBy) {
+            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+            if (!messageElement) return;
+            
+            const likeBtn = messageElement.querySelector('.like-btn');
+            const likeCount = messageElement.querySelector('.like-count');
+            const isLiked = likedBy.includes(username);
+            
+            if (isLiked) {
+                likeBtn.style.filter = 'brightness(1.2)';
+            } else {
+                likeBtn.style.filter = 'brightness(0.8)';
+            }
+            
+            likeBtn.classList.add('like-animation');
+            setTimeout(() => {
+                likeBtn.classList.remove('like-animation');
+            }, 600);
+            
+            likeCount.textContent = likes > 0 ? likes : '';
+        }
+        
+        // Функции для модального окна
+        window.openModal = function(imageData) {
+            modalImage.src = imageData;
+            imageModal.style.display = 'flex';
+        };
+        
+        closeModal.addEventListener('click', () => {
+            imageModal.style.display = 'none';
+        });
+        
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.style.display = 'none';
+            }
+        });
+        
+        function displayDemoMessages() {
+            chatMessages.innerHTML = `
+                <div class="system-message">
+                    Режим демонстрации. Для реального чата настройте Firebase.
+                </div>
+                <div class="message other-message" data-message-id="demo1">
+                    <div class="message-sender">Андрей</div>
+                    <div>Привет! Посмотрите на это фото:</div>
+                    <img src="https://via.placeholder.com/300x200?text=Демо+изображение" class="message-image" onclick="openModal('https://via.placeholder.com/300x200?text=Демо+изображение')">
+                    <div class="message-time">12:30</div>
+                    <div class="likes-container">
+                        <button class="like-btn" onclick="toggleLike('demo1', 2, ['Андрей', 'Мария'])">
+                            👍
+                        </button>
+                        <span class="like-count">2</span>
+                    </div>
+                </div>
+                <div class="message my-message" data-message-id="demo2">
+                    <div class="message-sender">Вы</div>
+                    <div>Крутое фото! Вот мое:</div>
+                    <img src="https://via.placeholder.com/250x150?text=Ваше+изображение" class="message-image" onclick="openModal('https://via.placeholder.com/250x150?text=Ваше+изображение')">
+                    <div class="message-time">Только что</div>
+                    <div class="likes-container">
+                        <button class="like-btn" onclick="toggleLike('demo2', 0, [])">
+                            👍
+                        </button>
+                        <span class="like-count"></span>
+                    </div>
+                </div>
+            `;
+            
+            document.querySelectorAll('.message').forEach(message => {
+                const messageId = message.dataset.messageId;
+                const likes = parseInt(message.querySelector('.like-count').textContent) || 0;
+                const likedBy = messageId === 'demo1' ? ['Андрей', 'Мария'] : [];
+                setupDoubleTap(message, messageId, likes, likedBy);
+            });
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Автоматически запрашиваем разрешение на уведомления при загрузке страницы
+        // если пользователь уже ранее заходил в чат
+        window.addEventListener('load', () => {
+            const savedUsername = localStorage.getItem('username');
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+            }
+            
+            // Проверяем, есть ли поддержка уведомлений
+            if (!('Notification' in window)) {
+                console.log('Этот браузер не поддерживает уведомления');
+                notificationPermission.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
