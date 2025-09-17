@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anal Messenger Test Server</title>
+    <title>Anal Messenger</title>
     <style>
         * {
             box-sizing: border-box;
@@ -377,6 +377,21 @@
             100% { transform: scale(1); }
         }
         
+        .notification-permission {
+            background: #ffeaa7;
+            color: #d35400;
+            padding: 12px 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .notification-permission button {
+            background: #e17055;
+            margin-left: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        
         @media (max-width: 768px) {
             .message {
                 max-width: 85%;
@@ -406,21 +421,6 @@
             .message-image {
                 max-height: 200px;
             }
-        }
-
-        .notification-permission {
-            background: #ffeaa7;
-            color: #d35400;
-            padding: 12px 20px;
-            text-align: center;
-            display: none;
-        }
-        
-        .notification-permission button {
-            background: #e17055;
-            margin-left: 10px;
-            padding: 8px 12px;
-            font-size: 14px;
         }
     </style>
 </head>
@@ -499,9 +499,6 @@
             db = firebase.firestore();
             messaging = firebase.messaging();
             
-            // Устанавливаем VAPID key из вашего облачного messaging
-            messaging.usePublicVapidKey("3Z71hGkWGk2_mw2y7jNTFu4vgfqxekOrc7STtfSHe1o");
-            
         } catch (error) {
             console.error('Ошибка инициализации Firebase:', error);
         }
@@ -551,7 +548,10 @@
         function getFCMToken() {
             if (!messaging) return;
             
-            messaging.getToken().then((currentToken) => {
+            // Указываем VAPID key при запросе токена
+            messaging.getToken({ 
+                vapidKey: "BMeOcMYlQNfp9dG7jGUNwjCiFvQbQQkRRBMRAqcojjGRa6_l0ikIXI-2HQeQiUf_cyMJd8f7IDZydyPufS7z468"
+            }).then((currentToken) => {
                 if (currentToken) {
                     fcmToken = currentToken;
                     console.log('FCM токен получен:', currentToken);
@@ -591,7 +591,6 @@
                     const userData = doc.data();
                     if (userData.username !== sender && userData.token) {
                         // Здесь должен быть вызов вашей Cloud Function
-                        // Для примера просто выводим в консоль
                         console.log('Отправка уведомления пользователю:', userData.username);
                         
                         // В реальном приложении здесь должен быть fetch к вашей Cloud Function
@@ -626,16 +625,7 @@
                     const { title, body } = payload.notification;
                     
                     // Создаем уведомление
-                    if ('serviceWorker' in navigator && Notification.permission === 'granted') {
-                        navigator.serviceWorker.getRegistration().then(registration => {
-                            if (registration) {
-                                registration.showNotification(title, {
-                                    body: body,
-                                    icon: '/icon-192x192.png'
-                                });
-                            }
-                        });
-                    } else if (Notification.permission === 'granted') {
+                    if (Notification.permission === 'granted') {
                         new Notification(title, { 
                             body: body,
                             icon: '/icon-192x192.png'
