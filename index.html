@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anal Messengerы</title>
+    <title>Anal Messenger</title>
     <style>
         * {
             box-sizing: border-box;
@@ -558,18 +558,33 @@
         }
 
         // Настройка FCM
-        function setupFCM() {
-            // Обработка входящих сообщений
-            messaging.onMessage((payload) => {
-                console.log('Сообщение получено:', payload);
-                showPushNotification(payload);
-            });
+        async function setupFCM() {
+    try {
+        // Регистрируем Service Worker
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+            scope: '/firebase-cloud-messaging-push-scope'
+        });
+        
+        console.log('Service Worker зарегистрирован:', registration);
 
-            // Обработка ошибок
-            messaging.onBackgroundMessage((payload) => {
-                console.log('Фоновое сообщение:', payload);
-            });
-        }
+        // Устанавливаем Service Worker для messaging
+        await messaging.useServiceWorker(registration);
+        
+        // Обработка входящих сообщений (когда приложение открыто)
+        messaging.onMessage((payload) => {
+            console.log('Сообщение получено:', payload);
+            showPushNotification(payload);
+            
+            // Показываем уведомление в чате для вызовов
+            if (payload.data && payload.data.type === 'call') {
+                showCallNotification(payload.data.caller);
+            }
+        });
+
+    } catch (error) {
+        console.error('Ошибка настройки FCM:', error);
+    }
+}
 
         // Запрос разрешения на уведомления
         async function requestNotificationPermission() {
